@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <?xaml-comp compile="true" ?>
 <ResourceDictionary 
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
@@ -42,4 +42,26 @@
     <SolidColorBrush x:Key="Gray600Brush" Color="{StaticResource Gray600}"/>
     <SolidColorBrush x:Key="Gray900Brush" Color="{StaticResource Gray900}"/>
     <SolidColorBrush x:Key="Gray950Brush" Color="{StaticResource Gray950}"/>
+
+    <!-- Log Level Colors -->
+    <Color x:Key="LogLevelInfoBackground">#FFFFFF</Color>
+    <Color x:Key="LogLevelWarnBackground">#FFFBE5</Color>
+    <Color x:Key="LogLevelErrorBackground">#FFF0F0</Color>
+    <Color x:Key="LogLevelFatalBackground">#F5C8C8</Color>
+    <Color x:Key="LogLevelDebugBackground">#F3F3F3</Color>
+    <Color x:Key="LogLevelUnknownBackground">White</Color>
+
+    <Color x:Key="LogLevelInfoText">#0A0A0A</Color>
+    <Color x:Key="LogLevelWarnText">#AA5500</Color>
+    <Color x:Key="LogLevelErrorText">#C40000</Color>
+    <Color x:Key="LogLevelFatalText">#5E0000</Color>
+    <Color x:Key="LogLevelDebugText">#666666</Color>
+    <Color x:Key="LogLevelUnknownText">#0A0A0A</Color>
+
+    <!-- Button Colors -->
+    <Color x:Key="ButtonInfoColor">#E0EFFF</Color>
+    <Color x:Key="ButtonWarnColor">#FFF3CD</Color>
+    <Color x:Key="ButtonErrorColor">#F8D7DA</Color>
+    <Color x:Key="ButtonFatalColor">#FF5C5C</Color>
+    <Color x:Key="ButtonDebugColor">#F0F0F0</Color>
 </ResourceDictionary>

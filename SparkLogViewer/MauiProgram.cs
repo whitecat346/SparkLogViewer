@@ -1,4 +1,9 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
+using SparkLogViewer.Core.Parsers;
+using SparkLogViewer.Core.Services.Interfaces;
+using SparkLogViewer.Infrastructure.Services.Implementations;
+using SparkLogViewer.ViewModels;
+using SparkLogViewer.Views;
 
 namespace SparkLogViewer
 {
@@ -18,6 +23,12 @@ namespace SparkLogViewer
 #if DEBUG
     		builder.Logging.AddDebug();
 #endif
+
+            builder.Services.AddSingleton<ILogParser, MinecraftLogParser>()
+                   .AddSingleton<ILogReaderService, LogFileReaderServices>();
+
+            builder.Services.AddTransient<SparkLogViewerViewModel>()
+                   .AddTransient<SparkLogViewerView>();
 
             return builder.Build();
         }

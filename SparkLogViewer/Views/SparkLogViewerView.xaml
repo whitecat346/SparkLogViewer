@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:SparkLogViewer.ViewModels"
+             xmlns:selectors1="using:SparkLogViewer.Selectors"
+             xmlns:enums1="clr-namespace:SparkLogViewer.Core.Enums;assembly=SparkLogViewer.Core"
+             xmlns:models="clr-namespace:SparkLogViewer.Core.Models;assembly=SparkLogViewer.Core"
+             x:DataType="viewmodels:SparkLogViewerViewModel"
+             x:Class="SparkLogViewer.Views.SparkLogViewerView"
+             Shell.NavBarIsVisible="False">
+
+    <ContentPage.Resources>
+
+        <!-- 基础日志项模板 -->
+        <ControlTemplate x:Key="BaseLogTemplate" x:DataType="models:LogEntry">
+            <Grid Padding="10,5"
+                  MinimumHeightRequest="20">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="40"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Label Grid.Column="0" 
+                       Text="{Binding LineNumber}"
+                       FontSize="14"
+                       TextColor="#7a7a7a"
+                       FontFamily="Consolas"
+                       Width="30"
+                       Margin="0,0,10,0"/>
+                <Label Grid.Column="1"
+                       Text="{Binding OriginalContent}"
+                       FontSize="14"
+                       FontFamily="Consolas"
+                       TextColor="#0A0A0A"/>
+            </Grid>
+        </ControlTemplate>
+
+        <!-- 不同日志级别的模板，仅仅是改变背景色 -->
+        <DataTemplate x:Key="InfoTemplate" x:DataType="models:LogEntry">
+            <Border BackgroundColor="{StaticResource LogLevelInfoBackground}" StrokeThickness="0">
+                <ContentView ControlTemplate="{StaticResource BaseLogTemplate}" BindingContext="{Binding .}"/>
+            </Border>
+        </DataTemplate>
+        <DataTemplate x:Key="WarnTemplate" x:DataType="models:LogEntry">
+            <Border BackgroundColor="{StaticResource LogLevelWarnBackground}" StrokeThickness="0">
+                <ContentView ControlTemplate="{StaticResource BaseLogTemplate}" BindingContext="{Binding .}"/>
+            </Border>
+        </DataTemplate>
+        <DataTemplate x:Key="ErrorTemplate" x:DataType="models:LogEntry">
+            <Border BackgroundColor="{StaticResource LogLevelErrorBackground}" StrokeThickness="0">
+                <ContentView ControlTemplate="{StaticResource BaseLogTemplate}" BindingContext="{Binding .}"/>
+            </Border>
+        </DataTemplate>
+        <DataTemplate x:Key="FatalTemplate" x:DataType="models:LogEntry">
+            <Border BackgroundColor="{StaticResource LogLevelFatalBackground}" StrokeThickness="0">
+                <ContentView ControlTemplate="{StaticResource BaseLogTemplate}" BindingContext="{Binding . }"/>
+            </Border>
+        </DataTemplate>
+        <DataTemplate x:Key="DebugTemplate" x:DataType="models:LogEntry">
+            <Border BackgroundColor="{StaticResource LogLevelDebugBackground}" StrokeThickness="0">
+                <ContentView ControlTemplate="{StaticResource BaseLogTemplate}" BindingContext="{Binding .}"/>
+            </Border>
+        </DataTemplate>
+        <DataTemplate x:Key="UnknownTemplate" x:DataType="models:LogEntry">
+            <Border BackgroundColor="{StaticResource LogLevelUnknownBackground}" StrokeThickness="0">
+                <ContentView ControlTemplate="{StaticResource BaseLogTemplate}" BindingContext="{Binding .}"/>
+            </Border>
+        </DataTemplate>
+
+        <selectors1:LogLevelTemplateSelector x:Key="LogLevelSelector"
+                                            InfoTemplate="{StaticResource InfoTemplate}"
+                                            WarnTemplate="{StaticResource WarnTemplate}"
+                                            ErrorTemplate="{StaticResource ErrorTemplate}"
+                                            FatalTemplate="{StaticResource FatalTemplate}"
+                                            DebugTemplate="{StaticResource DebugTemplate}"
+                                            UnknownTemplate="{StaticResource UnknownTemplate}"/>
+
+        <Style TargetType="Button" x:Key="FilterButtonStyle">
+            <Setter Property="CornerRadius" Value="5"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="Margin" Value="2"/>
+            <Setter Property="TextColor" Value="#3D3D3D"></Setter>
+        </Style>
+
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="Auto, Auto, *, Auto" ColumnSpacing="10" RowSpacing="5" Padding="10">
+
+        <!-- 第一行: 功能区 (这里简化了，只放了加载状态) -->
+        <ActivityIndicator Grid.Row="0" IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}" HorizontalOptions="End"/>
+        
+        <!-- 第二行: 日志级别过滤按钮 -->
+        <HorizontalStackLayout Grid.Row="1" Spacing="5" HorizontalOptions="End">
+            <Button Text="{Binding FatalCount, StringFormat='{0} fatals'}" Command="{Binding FilterByLevelCommand}" CommandParameter="{x:Static enums1:LogLevel.Fatal}" BackgroundColor="{StaticResource ButtonFatalColor}" Style="{StaticResource FilterButtonStyle}"/>
+            <Button Text="{Binding ErrorCount, StringFormat='{0} errors'}" Command="{Binding FilterByLevelCommand}" CommandParameter="{x:Static enums1:LogLevel.Error}" BackgroundColor="{StaticResource ButtonErrorColor}" Style="{StaticResource FilterButtonStyle}"/>
+            <Button Text="{Binding WarnCount, StringFormat='{0} warns'}" Command="{Binding FilterByLevelCommand}" CommandParameter="{x:Static enums1:LogLevel.Warning}" BackgroundColor="{StaticResource ButtonWarnColor}" Style="{StaticResource FilterButtonStyle}"/>
+            <Button Text="{Binding InfoCount, StringFormat='{0} infos'}" Command="{Binding FilterByLevelCommand}" CommandParameter="{x:Static enums1:LogLevel.Info}" BackgroundColor="{StaticResource ButtonInfoColor}" Style="{StaticResource FilterButtonStyle}"/>
+            <Button Text="{Binding DebugCount, StringFormat='{0} debugs'}" Command="{Binding FilterByLevelCommand}" CommandParameter="{x:Static enums1:LogLevel.Debug}" BackgroundColor="{StaticResource ButtonDebugColor}" Style="{StaticResource FilterButtonStyle}"/>
+        </HorizontalStackLayout>
+
+        <!-- 第三行: 日志列表 -->
+        <CollectionView Grid.Row="2"
+                        x:Name="LogCollectionView"
+                        ItemsSource="{Binding Logs}"
+                        ItemTemplate="{StaticResource LogLevelSelector}"
+                        SelectionMode="None"
+                        VerticalScrollBarVisibility="Always"/>
+        
+        <!-- 第四行: 底部操作栏 -->
+        <HorizontalStackLayout Grid.Row="3" Spacing="10" VerticalOptions="Center">
+            <CheckBox IsChecked="{Binding IsAutoScrollEnabled}"/>
+            <Label Text="自动滚动" VerticalOptions="Center"/>
+            <!--<Button Text="导出" Command="{Binding ExportCommand}" IsEnabled="False"/>-->
+            <!--<Button Text="结束游戏进程" Command="{Binding EndProcessCommand}" IsEnabled="False"/>-->
+            <!--<Button Text="清除" Command="{Binding ClearCommand}" IsEnabled="False"/>-->
+        </HorizontalStackLayout>
+        
+    </Grid>
+</ContentPage>
